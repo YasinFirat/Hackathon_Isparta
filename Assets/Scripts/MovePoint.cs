@@ -11,18 +11,28 @@ using UnityEngine;
 [System.Serializable]
 public class MovePoint
 {
+    [Tooltip("Point noktaları takip edecek obje.")]
     public Transform transform;
+    [Tooltip("Point noktaları")]
     public Transform[] points;
+    [Tooltip("döngü olacak mı ? eğer false olursa son noktada durur")]
     public bool isCircle;
+    [Tooltip("objenin pointe giderken hızı")]
     public float speed = 1;
+    [Tooltip("Point'e vardıktan sonra bekleme yeni bir point'e haret etmeden önce bekleme süresi(bekleme,veya bir idle,turn animasyonları eklenebilr)")]
     public float waitOnPointTime;
+    [Tooltip("Hangi point noktasına hareket ettiğimizi belirtir.")]
     private int pointCounter;
+    [Tooltip("Yön belirleneceği zaman bir önceki konumu tutar.")]
+    private Vector3 keepTurn;
+    [Tooltip("yön belirtir.")]
+    private Vector3 direction;
+    
 
     public void StartPosition()
     {
-        transform.position = points[0].position;
-        pointCounter++;
-
+        transform.position = points[0].position; //oyun başladığında ilk point noktasına transform yerleştirilir.
+        pointCounter++;//hedef point belirlenir.
     }
     /// <summary>
     /// Hedef konumunu tespit eder.
@@ -46,9 +56,10 @@ public class MovePoint
     /// Gerekli objeyi hedef konuma taşır.
     /// </summary>
 
-    public void MoveToNextPoint()
+    public MovePoint MoveToNextPoint()
     {
         transform.position = Vector3.MoveTowards(transform.position, points[pointCounter].position, Time.deltaTime * speed);
+        return this;
     }
     /// <summary>
     /// Hedef konuma belirlediğiniz değere kadar ulaşınca true döndürür.
@@ -66,5 +77,42 @@ public class MovePoint
         {
             return false;
         }
+    }
+    /// <summary>
+    /// Döndürme işlemi yapılır.
+    /// </summary>
+    /// <returns></returns>
+    public MovePoint Turn()
+    {
+        transform.rotation = Quaternion.LookRotation(transform.position - keepTurn, Vector3.up);
+        return this;
+    }
+    /// <summary>
+    /// Yön Belirlenir.
+    /// </summary>
+    /// <returns></returns>
+    private MovePoint Direction()
+    {
+        direction = transform.position - keepTurn; 
+        return this;
+    }
+    /// <summary>
+    /// pozisyon tutulur.
+    /// </summary>
+    /// <returns></returns>
+    private MovePoint Keep()
+    {
+        keepTurn = transform.position; 
+        return this;
+    }
+    /// <summary>
+    /// Hareket ve döndürme işlemi yapılır.
+    /// </summary>
+    public void MoveToNextPointAndTurn()
+    {
+       Keep()
+            .MoveToNextPoint()
+            . Direction()
+            .Turn();
     }
 }

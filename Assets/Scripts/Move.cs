@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Move : MonoBehaviour
+public class Move : RunToHeaven
 {
     [Tooltip("Joystick islemi yapilir.(Kullanmak istediğiniz joystick'i sürükleyiniz)")]
     public VariableJoystick move; //joystick verileri alınır.
